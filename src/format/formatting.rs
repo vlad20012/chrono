@@ -903,20 +903,67 @@ mod tests {
     }
 }
 
+/// Generates a URL to the Wikipedia page for the given date.
+///
+/// # Arguments
+///
+/// * `date` - A `DateTime<Utc>` object representing the date.
+///
+/// # Returns
+///
+/// A `String` that contains the URL to the Wikipedia page.
 pub fn get_wiki_page_for_data(date: DateTime<Utc>) -> String {
     format!("https://en.wikipedia.org/wiki/{}", date.format("%B_%d"))
 }
 
-pub async fn todays_wiki_article(date: DateTime<Utc>) -> String {
-    let resp = reqwest::get(get_wiki_page_for_data(date)).await.unwrap();
-    let body = resp.text().await.unwrap();
-    body
+/// Generates the plain text content from a given HTML string.
+///
+/// # Arguments
+///
+/// * `html` - A `String` containing the HTML content to be parsed.
+///
+/// # Returns
+///
+/// A `String` that contains the plain text extracted from the HTML content.
+pub fn parse_html_to_text(html: String) -> String {
+    use scraper::{Html, Selector};
+
+    // Parse the HTML string
+    let document = Html::parse_document(&html);
+
+    // Create a selector to retrieve all text nodes
+    let text_selector = Selector::parse("body").unwrap();
+
+    // Collect all text from the selected nodes
+    let mut text_content = String::new();
+    for element in document.select(&text_selector) {
+        text_content.push_str(&element.text().collect::<Vec<_>>().concat());
+    }
+
+    text_content
+}
+
+
+
+/// Retrieves the Wikipedia article content for the given date.
+/// 
+/// # Arguments
+/// 
+/// * `date` - A `DateTime<Utc>` object representing the date.
+/// 
+/// # Returns
+/// 
+/// A `Result<String, reqwest::Error>` which contains the content of the Wikipedia page.
+pub async fn todays_wiki_article(date: DateTime<Utc>) -> Result<String, reqwest::Error> {
+    let resp = reqwest::get(get_wiki_page_for_data(date)).await?;
+    let body = resp.text().await?;
+    Ok(body)
 }
 
 #[tokio::test]
 async fn test_random_wiki_article() {
     let random_article = todays_wiki_article(Utc.with_ymd_and_hms(2023, 4, 1, 0, 0, 0).unwrap()).await;
-    assert_eq!(random_article.len(), 471290);
-    println!("{}", random_article);
+    assert_eq!(random_article.as_ref().unwrap().len(), 471290);
+    println!("{}", random_article.unwrap());
     // assert_eq!(random_article.chars().all(|c| c.is_alphanumeric()), true);
 }

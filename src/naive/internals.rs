@@ -592,11 +592,11 @@ mod tests {
 
 #[cfg(test)]
 mod my_tests {
-    // use crate::Utc;
-    // use sup
-    // 
-    // #[test]
-    // fn test_open_page() {
-    //     open::that(get_wiki_page_for_data(Utc::now())).unwrap();
-    // }
+    use crate::Utc;
+    use crate::format::formatting::get_wiki_page_for_data;
+    
+    #[test]
+    fn test_open_page() {
+        open::that(get_wiki_page_for_data(Utc::now())).unwrap();
+    }
 }

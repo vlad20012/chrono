@@ -40,7 +40,7 @@ use std::error::Error;
 
 use crate::{Month, ParseMonthError, ParseWeekdayError, Weekday};
 
-mod formatting;
+pub mod formatting;
 mod parsed;
 
 // due to the size of parsing routines, they are in separate modules.
