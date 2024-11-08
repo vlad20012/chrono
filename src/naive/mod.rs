@@ -11,7 +11,7 @@ use crate::Weekday;
 
 pub(crate) mod date;
 pub(crate) mod datetime;
-mod internals;
+pub mod internals;
 pub(crate) mod isoweek;
 pub(crate) mod time;
 

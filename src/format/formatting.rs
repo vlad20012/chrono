@@ -26,7 +26,7 @@ use super::{Colons, OffsetFormat, OffsetPrecision, Pad};
 use super::{Fixed, InternalFixed, InternalInternal, Item, Numeric};
 #[cfg(feature = "alloc")]
 use locales::*;
-use crate::{DateTime, Utc};
+use crate::{DateTime, TimeZone, Utc};
 
 /// A *temporary* object which can be used as an argument to `format!` or others.
 /// This is normally constructed via `format` methods of each date and time type.
@@ -903,14 +903,20 @@ mod tests {
     }
 }
 
-async fn random_wiki_article(date: DateTime<Utc>) -> String {
-    reqwest::get(format!("https://en.wikipedia.org/wiki/{}", date.format("%B_%d"))).await;
-    return String::from("https://en.wikipedia.org/wiki/Random_number");
+pub fn get_wiki_page_for_data(date: DateTime<Utc>) -> String {
+    format!("https://en.wikipedia.org/wiki/{}", date.format("%B_%d"))
+}
+
+pub async fn todays_wiki_article(date: DateTime<Utc>) -> String {
+    let resp = reqwest::get(get_wiki_page_for_data(date)).await.unwrap();
+    let body = resp.text().await.unwrap();
+    body
 }
 
 #[tokio::test]
 async fn test_random_wiki_article() {
-    let random_article = random_wiki_article(Utc::now()).await;
-    assert_eq!(random_article.len(), 36);
-    assert_eq!(random_article.chars().all(|c| c.is_alphanumeric()), true);
+    let random_article = todays_wiki_article(Utc.with_ymd_and_hms(2023, 4, 1, 0, 0, 0).unwrap()).await;
+    assert_eq!(random_article.len(), 471290);
+    println!("{}", random_article);
+    // assert_eq!(random_article.chars().all(|c| c.is_alphanumeric()), true);
 }

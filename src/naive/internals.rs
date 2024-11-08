@@ -589,3 +589,14 @@ mod tests {
         assert!(Mdf::new(1, 32, flags).is_none());
     }
 }
+
+#[cfg(test)]
+mod my_tests {
+    // use crate::Utc;
+    // use sup
+    // 
+    // #[test]
+    // fn test_open_page() {
+    //     open::that(get_wiki_page_for_data(Utc::now())).unwrap();
+    // }
+}
