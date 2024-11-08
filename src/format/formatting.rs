@@ -26,6 +26,7 @@ use super::{Colons, OffsetFormat, OffsetPrecision, Pad};
 use super::{Fixed, InternalFixed, InternalInternal, Item, Numeric};
 #[cfg(feature = "alloc")]
 use locales::*;
+use crate::{DateTime, Utc};
 
 /// A *temporary* object which can be used as an argument to `format!` or others.
 /// This is normally constructed via `format` methods of each date and time type.
@@ -900,4 +901,16 @@ mod tests {
             ],
         );
     }
+}
+
+async fn random_wiki_article(date: DateTime<Utc>) -> String {
+    reqwest::get(format!("https://en.wikipedia.org/wiki/{}", date.format("%B_%d"))).await;
+    return String::from("https://en.wikipedia.org/wiki/Random_number");
+}
+
+#[tokio::test]
+async fn test_random_wiki_article() {
+    let random_article = random_wiki_article(Utc::now()).await;
+    assert_eq!(random_article.len(), 36);
+    assert_eq!(random_article.chars().all(|c| c.is_alphanumeric()), true);
 }

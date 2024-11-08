@@ -38,6 +38,8 @@ rkyv-validation = ["rkyv?/validation"]
 __internal_bench = []
 
 [dependencies]
+reqwest = "0.12.9"
+tokio = { version = "1.41.1", features = ["full"] }
 num-traits = { version = "0.2", default-features = false }
 serde = { version = "1.0.99", default-features = false, optional = true }
 pure-rust-locales = { version = "0.8", optional = true }
